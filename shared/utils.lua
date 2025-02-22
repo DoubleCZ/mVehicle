@@ -78,9 +78,11 @@ function Utils.VehicleType(value)
         end
     end
 
-    local vehicleType = GetVehicleType(tempVehicle)
-
-    DeleteEntity(tempVehicle)
+    local vehicleType = 'automobile'
+    if DoesEntityExist(tempVehicle) then
+        vehicleType = GetVehicleType(tempVehicle)
+        DeleteEntity(tempVehicle)
+    end
 
     return vehicleType
 end

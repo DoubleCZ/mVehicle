@@ -127,7 +127,7 @@ exports('mradio', function(event, item, inventory, slot, data)
     local entity = GetVehiclePedIsIn(playerPed, false)
     local playerSeat = GetPedInVehicleSeat(entity, -1)
     local isPedDriver = playerSeat == playerPed
-    local plate = GetVehicleNumberPlateText(entity)
+    local plate = exports['mVehicle']:GetVehicleRealPlate(entity)
 
 
     if event == 'usingItem' then

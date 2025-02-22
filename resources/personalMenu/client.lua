@@ -107,7 +107,7 @@ end)
 
 exports('VehicleKeysMenu', Vehicles.VehicleKeysMenu)
 
-if Config.PersonalVehicleMenu then
+--[[if Config.PersonalVehicleMenu then
     lib.addRadialItem({
         {
             id = 'vehicle_keys_menu',
@@ -116,7 +116,7 @@ if Config.PersonalVehicleMenu then
             onSelect = Vehicles.VehicleKeysMenu
         }
     })
-end
+end]]
 
 local blip = nil
 local timer

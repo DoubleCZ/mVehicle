@@ -151,7 +151,7 @@ lib.onCache('seat', function(value)
 
         saveKHM = true
 
-        data.plate = GetVehicleNumberPlateText(vehicle)
+        data.plate = exports['mVehicle']:GetVehicleRealPlate(vehicle)
 
         local vehicleDb = lib.callback.await('mVehicle:VehicleState', false, 'getVeh', data.plate)
 
@@ -187,7 +187,7 @@ lib.onCache('seat', function(value)
                         local State = Entity(trailerEntity).state
                         if State and State.Spawned then
                             local Trailer = {}
-                            Trailer.plate = GetVehicleNumberPlateText(trailerEntity)
+                            Trailer.plate = exports['mVehicle']:GetVehicleRealPlate(trailerEntity)
                             Trailer.coords = Utils.GetVector4(trailerEntity, true)
                             Trailer.props = lib.getVehicleProperties(trailerEntity)
                             if type(Trailer.props) == 'table' then

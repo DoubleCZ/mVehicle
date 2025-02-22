@@ -78,7 +78,7 @@ function OpenRadio()
 
     data.networkId = VehToNet(data.entity)
 
-    data.plate = GetVehicleNumberPlateText(data.entity)
+    data.plate = exports['mVehicle']:GetVehicleRealPlate(data.entity)
 
     local metadata = Entity(data.entity).state.metadata
 
@@ -158,7 +158,7 @@ RegisterNuiCallback('radioNui', function(data, cb)
             return
         end
 
-        local plate = GetVehicleNumberPlateText(data.entity)
+        local plate = exports['mVehicle']:GetVehicleRealPlate(data.entity)
 
         if plate == data.plate then
             data.networkId = VehToNet(data.entity)
@@ -185,6 +185,8 @@ end)
 if Config.Radio.command then
     RegisterCommand(Config.Radio.command, OpenRadio)
 end
+
+exports('OpenRadio', OpenRadio)
 
 lib.onCache('seat', function(value)
     if value == -1 then

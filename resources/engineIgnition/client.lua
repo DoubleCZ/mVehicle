@@ -34,27 +34,40 @@ lib.addKeybind({
         local isDriver = (GetPedInVehicleSeat(vehicle, -1) == cache.ped)
 
         if not isDriver then return end
-
+        local plate
         if not Config.ItemKeys then
             local key = lib.callback.await('mVehicle:VehicleEngine', nil,
-                { NetId = VehToNet(vehicle), plate = GetVehicleNumberPlateText(vehicle) })
+                { NetId = VehToNet(vehicle), plate = exports['mVehicle']:GetVehicleRealPlate(vehicle) })
+                ExecuteCommand("me Vytahuje klíče ze zapalování")
             if not key then return end
         else
-            local plate = GetVehicleNumberPlateText(vehicle)
+            plate = exports['mVehicle']:GetVehicleRealPlate(vehicle)
             local key = Utils.KeyItem(plate)
-            if not key then return end
+            if not key and not engineStatus and not Entity(vehicle).state.hotwired then return end
         end
 
         local vehicleClass = GetVehicleClass(vehicle)
 
         if vehicleClass ~= 8 then
             TaskPlayAnim(cache.ped, 'veh@std@ds@fpsbase', 'start_engine', 8.0, 1.0, not engineStatus and 1500 or 1000, 49, 0, 0, 0, 0)
+            --TaskPlayAnim(cache.ped, 'veh@std@ds@fpsbase', 'start_engine', 8.0, 1.0, -1, 0, 0, 0, 0, 0)
         end
         
         Citizen.Wait(not engineStatus and 1500 or 1000)
-
+        if not engineStatus then
+            ExecuteCommand("me Vkládá klíče do zapalování")
+            --Citizen.Wait(1500)
+            if not Entity(vehicle).state.hotwired then
+                TriggerServerEvent('mVehicle:ToggleEngine', plate, true)
+            end
+        else
+            ExecuteCommand("me Vytahuje klíče ze zapalování")
+            --Citizen.Wait(1000)
+            if not Entity(vehicle).state.hotwired then
+                TriggerServerEvent('mVehicle:ToggleEngine', plate, false)
+            end
+        end
         SetVehicleEngineOn(vehicle, not engineStatus, true, true)
-
         if not engineStatus then
             local totalDuration = 500
             local waitTime = 10

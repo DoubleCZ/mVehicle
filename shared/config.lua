@@ -13,7 +13,7 @@ Config.Debug               = false
 Config.Inventory           = 'ox'
 
 --- Enable Bike Helmet
-Config.EnableBikeHelmet    = true
+Config.EnableBikeHelmet    = false
 
 --- Personal Vehicle Menu 
 Config.PersonalVehicleMenu = true
@@ -21,9 +21,9 @@ Config.PersonalVehicleMenu = true
 --- Vehicle Density | 0.0 min | 1.0 max
 Config.VehicleDensity      = {
     CloseAllVehicles = true,
-    VehicleDensity = 1.0,
-    RandomVehicleDensity = 1.0,
-    ParkedVehicleDensity = 1.0
+    VehicleDensity = 0.3,
+    RandomVehicleDensity = 0.2,
+    ParkedVehicleDensity = 0.7
 }
 
 --- Persistent
@@ -47,7 +47,7 @@ Config.ItemKeys            = true    -- false = Vehicles DB
 
 Config.CarKeyItem          = 'carkey' -- item name
 
-Config.DoorKeyBind         = 'U'
+Config.DoorKeyBind         = 'L'
 
 Config.KeyDelay            = 500
 
@@ -56,7 +56,7 @@ Config.KeyDistance         = 5
 --- Engine ignition need keys or hotwire
 Config.VehicleEngine       = {
     ToggleEngine = true,
-    KeyBind = 'M',
+    KeyBind = 'Y',
     keepEngineOnWhenLeave = true, -- requires ToggleEngine
 }
 ----------------------------------------------------------------------
@@ -67,9 +67,9 @@ Config.SeatShuffle         = true
 --- Vehicle Radio
 --- xSound Dependency | https://github.com/Xogy/xsound 
 Config.Radio               = {
-    command = false, -- false or string 
+    command = 'mradio', -- false or string 
     KeyBind = false, -- false or string
-    radial = true,   -- true/false
+    radial = false,   -- true/false
     distance = 5,    -- distance sound
 }
 

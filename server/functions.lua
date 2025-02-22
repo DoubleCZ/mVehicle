@@ -3,6 +3,22 @@ Vehicles.Vehicles = {}
 Vehicles.Save = false
 Vehicles.Config = Config
 
+exports('GetVehicleRealPlate', function(vehicle)
+    if not DoesEntityExist(vehicle) then return 'PLATENOT' end
+    if Entity(vehicle).state.realplate then
+        return Entity(vehicle).state.realplate
+    end
+
+    return GetVehicleNumberPlateText(vehicle)
+end)
+
+RegisterNetEvent('mVehicle:ToggleEngine', function(plate, toggle)
+    if toggle then
+        Vehicles.ItemCarKeys(source, 'delete', plate)
+    else
+        Vehicles.ItemCarKeys(source, 'add', plate)
+    end
+end)
 
 -- temporary
 local WIP = false
@@ -59,8 +75,32 @@ function Vehicles.CreateVehicle(data, cb)
         data.plate = data.vehicle.plate
     end
 
-    if Vehicles.GetVehicleByPlate(data.vehicle.plate) then
-        Utils.Debug('warn', 'CreateVehicle plate duplicated [ "%s" ]', data.vehicle.plate)
+    local realplate
+    if data.vehicle.realplate then
+        realplate = data.vehicle.realplate
+        data.realplate = data.vehicle.realplate
+    end
+
+    if not data.plate then
+        data.plate = data.vehicle.plate
+        if realplate then
+            data.plate = realplate
+        else
+            data.realplate = data.plate
+        end
+    else
+        if not realplate then
+            data.realplate = data.plate
+        end
+    end
+
+    local plateForCheck = data.plate
+    if realplate then
+        plateForCheck = realplate
+    end
+
+    if Vehicles.GetVehicleByPlate(plateForCheck) then
+        Utils.Debug('warn', 'CreateVehicle plate duplicated [ "%s" ]', plateForCheck)
         return false
     end
 
@@ -100,11 +140,6 @@ function Vehicles.CreateVehicle(data, cb)
 
     if data.metadata.DoorStatus then
         SetVehicleDoorsLocked(data.entity, data.metadata.DoorStatus)
-    end
-
-
-    if data.metadata.fakeplate then
-        data.vehicle.plate = data.metadata.fakeplate
     end
 
     if data.metadata.RoutingBucket then
@@ -171,6 +206,9 @@ function Vehicles.CreateVehicle(data, cb)
     end
 
     SetEntityDistanceCullingRadius(data.entity, 99999.0)
+    if realplate then
+        State:set('realplate', realplate, true)
+    end
 
     SetVehicleNumberPlateText(data.entity, data.vehicle.plate)
 

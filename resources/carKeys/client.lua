@@ -25,7 +25,7 @@ local ToggleVehicleDoors = function()
     data.modelName = Vehicles.GetVehicleLabel(GetEntityModel(data.entity))
     data.Status = GetVehicleDoorLockStatus(data.entity)
     data.NetId = VehToNet(data.entity)
-    data.plate = GetVehicleNumberPlateText(data.entity)
+    data.plate = exports['mVehicle']:GetVehicleRealPlate(data.entity)
 
     local HaveKey = Utils.KeyItem(data.plate)
     local inCar = IsPedInAnyVehicle(ped, false)

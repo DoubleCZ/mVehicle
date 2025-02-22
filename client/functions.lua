@@ -25,6 +25,15 @@ end
 
 --Exports
 
+exports('GetVehicleRealPlate', function(vehicle)
+    if not DoesEntityExist(vehicle) then return 'PLATENOT' end
+    if Entity(vehicle).state.realplate then
+        return Entity(vehicle).state.realplate
+    end
+
+    return GetVehicleNumberPlateText(vehicle)
+end)
+
 exports('vehicle', function()
     return Vehicles
 end)

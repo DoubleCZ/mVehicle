@@ -1,3 +1,4 @@
+
 --Lock Pick
 exports('lockpick', function(event, item, inventory, slot, data)
     if event == 'usingItem' then
@@ -60,32 +61,37 @@ exports('fakeplate', function(event, item, inventory, slot, data)
         local itemSlot = exports.ox_inventory:GetSlot(inventory.id, slot)
         if vehicle then
             if vehicle.owner == identifier then
-                local metadata = vehicle.GetMetadata('fakeplate')
-                if not metadata and not itemSlot.metadata.plate then
+                local newSpz = '        '
+                local vehicleRealPlate = GetVehicleNumberPlateText(vehicles)
+                if vehicleRealPlate ~= newSpz then
                     local anim = lib.callback.await('mVehicle:PlayerItems', inventory.id, 'changeplate')
                     if anim then
-                        exports.ox_inventory:SetMetadata(inventory.id, slot,
-                            {
-                                label = locale('fakeplate3'),
-                                plate = vehicle.plate,
-                                description = vehicle.plate,
-                                fakeplate = itemSlot.metadata.fakeplate
-                            })
-                        SetVehicleNumberPlateText(vehicles, itemSlot.metadata.fakeplate)
-                        vehicle.FakePlate(itemSlot.metadata.fakeplate)
-                        return false
+                        if not Entity(vehicles).state.realplate then
+                            Entity(vehicles).state:set('realplate', vehicleRealPlate, true)
+                        end
+
+                        Entity(vehicles).state:set('fakeplate', newSpz, true)
+                        SetVehicleNumberPlateText(vehicles, newSpz)
+                        
+                        if itemSlot.metadata and itemSlot.metadata.usesRemaining then
+                            itemSlot.metadata.usesRemaining = itemSlot.metadata.usesRemaining - 1
+                            if itemSlot.metadata.usesRemaining == 0 then
+                                exports.ox_inventory:RemoveItem(inventory.id, 'fakeplate', 1, nil, slot)
+                            else
+                                exports.ox_inventory:SetMetadata(inventory.id, slot, {usesRemaining = itemSlot.metadata.usesRemaining, description = 'Specialní šroubovák se kterým můžete sundat spz. Zbývá '..itemSlot.metadata.usesRemaining..' použití'})
+                            end
+                        else
+                            exports.ox_inventory:SetMetadata(inventory.id, slot, {usesRemaining = 9, description = 'Specialní šroubovák se kterým můžete sundat spz. Zbývá 9 použití'})
+                        end
+
+                        exports.ox_inventory:AddItem(inventory.id, 'spz', 1, {description = vehicleRealPlate})
                     end
-                elseif vehicle.plate == itemSlot.metadata.plate then
-                    local anim = lib.callback.await('mVehicle:PlayerItems', inventory.id, 'changeplate')
-                    if anim then
-                        SetVehicleNumberPlateText(vehicles, vehicle.plate)
-                        vehicle.FakePlate()
-                        exports.ox_inventory:SetMetadata(inventory.id, slot,
-                            {
-                                description = itemSlot.metadata.fakeplate,
-                                fakeplate = itemSlot.metadata.fakeplate
-                            })
-                    end
+                else
+                    Notification(inventory.id, {
+                        title = locale('fakeplate1'),
+                        description = 'Toto vozidlo již má bílou SPZ',
+                        icon = 'user',
+                    })
                 end
             else
                 Notification(inventory.id, {
@@ -95,8 +101,64 @@ exports('fakeplate', function(event, item, inventory, slot, data)
                 })
             end
         else
-            local plate = GetVehicleNumberPlateText(vehicles)
+            Notification(inventory.id, {
+                title = locale('fakeplate1'),
+                description = 'Nestojíš u žádného vozidla',
+                icon = 'user',
+            })
+        end
 
+        return
+    end
+end)
+
+exports('plate', function(event, item, inventory, slot, data)
+    if event == 'usingItem' then
+        local player = GetPlayerPed(inventory.id)
+        local coords = GetEntityCoords(player)
+        local identifier = Identifier(inventory.id)
+        local vehicles = lib.getClosestVehicle(coords, 5.0, true)
+        local vehicle = Vehicles.GetVehicle(vehicles)
+        local itemSlot = exports.ox_inventory:GetSlot(inventory.id, slot)
+        if vehicle then
+            if vehicle.owner == identifier then
+                local newSpz = itemSlot.metadata.description
+                
+                local vehicleFakePlate = GetVehicleNumberPlateText(vehicles)
+                if vehicleFakePlate ~= newSpz then
+                    local anim = lib.callback.await('mVehicle:PlayerItems', inventory.id, 'changeplate')
+                    if anim then
+
+                        if not Entity(vehicles).state.realplate then
+                            Entity(vehicles).state:set('realplate', vehicleFakePlate, true)
+                        end
+
+                        --Entity(vehicles).state:set('fakeplate', nil, true)
+                        SetVehicleNumberPlateText(vehicles, newSpz)
+                        
+                        exports.ox_inventory:RemoveItem(inventory.id, 'spz', 1, nil, slot)
+                        --exports.ox_inventory:AddItem(inventory.id, 'fakeplate', 1)
+                    end
+                else
+                    Notification(inventory.id, {
+                        title = locale('fakeplate1'),
+                        description = 'Toto vozidlo již má reálnou SPZ',
+                        icon = 'user',
+                    })
+                end
+            else
+                Notification(inventory.id, {
+                    title = locale('fakeplate1'),
+                    description = locale('fakeplate2'),
+                    icon = 'user',
+                })
+            end
+        else
+            Notification(inventory.id, {
+                title = locale('fakeplate1'),
+                description = 'Nestojíš u žádného vozidla',
+                icon = 'user',
+            })
         end
 
         return
